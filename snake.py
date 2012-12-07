@@ -12,29 +12,26 @@ bulbs = Bulbs(d)
 class Snake:
     def __init__(self, position, size, speed, color):
         self.start = position
-        self.end = (position+size) % 100
+        self.end = (position+size) % Bulbs.COUNT
         self.speed = speed
         self.color = color
 
     def move(self):
-        self.start = (self.start + self.speed) % 100
-        self.end = (self.end + self.speed) % 100
+        self.start = (self.start + self.speed) % Bulbs.COUNT
+        self.end = (self.end + self.speed) % Bulbs.COUNT
 
     def draw(self, bulbs):
         x = self.start
         while x != self.end:
             bulbs.add(x, self.color)
-            x = (x + 1) % 100
+            x = (x + 1) % Bulbs.COUNT
 
-red = (15,0,0,255) # red 0-15, green 0-15, blue 0-15, brightness 0-255
-blue = (0,0,15,255)
-
-plane = [Snake(0,10,1,red), Snake(50,15,-1,blue)]
+plane = [Snake(0,10,1,Bulbs.RED), Snake(50,15,-1,Bulbs.BLUE)]
 
 while True:
+    bulbs.clear()
     for snake in plane:
         snake.move()
         snake.draw(bulbs)
     bulbs.render()
-    bulbs.frame = [(0,0,0,0)] * 100
     sleep(0.01)
