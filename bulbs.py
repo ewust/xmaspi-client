@@ -14,6 +14,8 @@ class Bulbs:
     PURPLE  = (15, 0,15,255)
     YELLOW  = (15,15, 0,255)
 
+    COLORS = (WHITE, RED, GREEN, BLUE, CYAN, PURPLE, YELLOW)
+
     def __init__(self, driver):
         self.state = [(0,0,0,0)] * 100
         self.frame = [(0,0,0,0)] * 100
@@ -27,6 +29,10 @@ class Bulbs:
     def add(self, i, (r,g,b,a)):
         (cr,cg,cb,ca) = self.frame[i]
         self.set(i,(cr+r,cg+g,cb+b,ca+a))
+    def mix(self, i, (r,g,b,a)):
+        # XXX: Work like add(), but scale relative amounts based on alpha channel
+        #      (e.g. bright red + dim blue is mostly red stil, not bright purple)
+        return self.add(i, (r,g,b,a))
     def render(self, force=False):
         wrote_bulb = False
         for i in range(100):

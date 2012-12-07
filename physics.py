@@ -7,7 +7,7 @@ from remote import RemoteDriver
 
 import random
 
-NUM_BALLS = 3
+NUM_BALLS = random.randint(2,5)
 
 print "waiting our turn..."
 if len(sys.argv) > 1:
@@ -28,98 +28,90 @@ for f in range(95,100):
 	bumpers.add(f)
 field = set(range(100)) - bumpers
 
-# Now add the balls
-balls = random.sample(range(10,90,2), NUM_BALLS)
-for b in balls:
-	if random.randint(0,1):
-		bulbs.frame[b] = (15,0,0,random.randint(150,255))
-	else:
-		bulbs.frame[b] = (0,15,0,random.randint(150,255))
-
-# Draw everything
+# Draw blank slate
+blank_slate = list(bulbs.frame)
 bulbs.render(force=True)
+sleep(.1)
 
-# Blink balls before starting motion
-for blinks in range(3):
-	d.busy_wait(.5)
-	a = [0] * len(balls)
-	for i in range(len(balls)):
-		a[i] = bulbs.frame[balls[i]][3]
-		r,g,b,ign = bulbs.frame[balls[i]]
-		bulbs.frame[balls[i]] = (r,g,b,0)
-	bulbs.render()
-	d.busy_wait(.5)
-	for i in range(len(balls)):
-		r,g,b,ign = bulbs.frame[balls[i]]
-		bulbs.frame[balls[i]] = (r,g,b,a[i])
-	bulbs.render()
+# Now add the balls
+balls = zip(*[random.sample(range(10,90,2), NUM_BALLS),random.sample(Bulbs.COLORS, NUM_BALLS),[x*[-1,1][random.randint(0,1)] for x in [1]*NUM_BALLS]])
 
 
-def ghost(ball):
-	a = bulbs.frame[ball][3]
-	if bulbs.frame[ball][0]:
-		d = 1
-	else:
-		d = -1
+def ghost(ball, color, direction, initial=False):
+	r,g,b,a = color
 
 	a = a >> 1
 	while (a > 0):
-		r,g,b,ign = bulbs.frame[ball]
-
-		ball -= d
-		if sum(bulbs.frame[ball][2:]):
+		ball -= direction
+		if ball in bumpers or ball in zip(*balls)[0]:
 			return
+
 		a = a >> 1
-		bulbs.add(ball, (r,g,b,a))
+		bulbs.mix(ball, (r,g,b,a))
+		if initial:
+			bulbs.render()
+			sleep(.1)
 
-for b in balls:
-	ghost(b)
+print "Starting with %d balls at positions:" % (NUM_BALLS)
+for ball,color,direction in balls:
+	print "\t%d: %s going %d" % (ball, str(color), direction)
+	bulbs.frame[ball] = color
+	bulbs.render()
+	sleep(.1)
+	ghost(ball, color, direction, True)
 
-bulbs.render()
+# Blink balls before starting motion
+cache = bulbs.frame
+for blinks in range(3):
+	bulbs.frame = blank_slate
+	bulbs.render(force=True)
+	d.busy_wait(.5)
+	bulbs.frame = cache
+	bulbs.render(force=True)
+	d.busy_wait(.5)
 
-def advance(ball):
-	r,g,b,a = bulbs.frame[ball]
+
+def advance(ball_tuple):
+	ball, color, direction = ball_tuple
+	r,g,b,a = color
 	bulbs.frame[ball] = (0,0,0,0) # 0 for now, will be ghosted later
 
-	if r:
-		d = 1
-	elif g:
-		d = -1
-	else:
-		print "Something has gone wrong"
-		print "Current ball:", ball
-		print (r,g,b,a)
-		print
-		print bulbs.frame
-
-	if ball+d in bumpers:
-		d = -d
-		ball = ball + d
-		bulbs.frame[ball] = (g,r,b,a>>1)
-		print "Hit bumper. Ball %d is now (%d %d %d %d)" % (ball, g,r,b,a>>1)
-	elif ball+d in balls:
-		print "Collided with ", ball+d
-		other = ball+d
+	if ball+direction in bumpers:
+		print "%d Hit bumper." % (ball)
+		direction = -direction
+		ball = ball + direction
+		a = a >> 1
+	elif ball+direction in zip(*balls)[0]:
+		print "%d Collided with %d" % (ball, ball+direction)
+		other = ball+direction
 		ro,go,bo,ao = bulbs.frame[other]
 
-		d = -d
-		ball = ball + d
-		bulbs.frame[ball] = (ro,go,bo,a)
+		if random.randint(0,255) in range(abs(a-ao)):
+			# Pass through instead of collide
+			# Should be impossilbe if both lights same brightess
+			# Greater the delta `a', greater the prob. of passthru
+			ball += direction
+		else:
+			direction = -direction
+			ball = ball + direction
 
-		bulbs.frame[other] = (r,g,b,ao)
+			# Reverse direction of collided ball
+			temp = list(balls[zip(*balls)[0].index(other)])
+			temp[2] *= -1
+			balls[zip(*balls)[0].index(other)] = tuple(temp)
 	else:
-		ball = ball + d
-		bulbs.frame[ball] = (r,g,b,a)
+		ball += direction
 
-	return ball
+	bulbs.frame[ball] = (r,g,b,a)
+	return ball, (r,b,g,a), direction
 
 while True:
 	for i in range(len(balls)):
 		balls[i] = advance(balls[i])
-	for b in balls:
-		ghost(b)
+	for ball,color,direction in balls:
+		ghost(ball,color,direction)
 	bulbs.render()
-	for b in field - set(balls):
+	for b in field - set(zip(*balls)[0]):
 		bulbs.frame[b] = (0,0,0,0)
 	d.busy_wait(.1)
 
