@@ -7,7 +7,8 @@ def clamp(x, min, max):
 
 class Bulbs:
     def __init__(self, driver):
-        self.state = self.frame = [(0,0,0,0)] * 100
+        self.state = [(0,0,0,0)] * 100
+        self.frame = [(0,0,0,0)] * 100
         self.driver = driver
     def set(self, i, (r,g,b,a)):
         r = clamp(r,0,15)
@@ -23,4 +24,4 @@ class Bulbs:
             if self.frame[i] != self.state[i]:
                 (r,g,b,a) = self.frame[i]
                 self.driver.write_led(i, a, r, g, b)
-        self.state = self.frame
+                self.state[i] = self.frame[i] # deep copy
