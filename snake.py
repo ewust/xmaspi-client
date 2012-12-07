@@ -36,4 +36,5 @@ while True:
         snake.move()
         snake.draw(bulbs)
     bulbs.render()
+    bulbs.frame = [(0,0,0,0)] * 100
     sleep(0.01)

@@ -24,4 +24,3 @@ class Bulbs:
                 (r,g,b,a) = self.frame[i]
                 self.driver.write_led(i, a, r, g, b)
         self.state = self.frame
-        self.frame = [(0,0,0,0)] * 100
