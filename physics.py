@@ -8,6 +8,7 @@ from remote import RemoteDriver
 import random
 
 NUM_BALLS = random.randint(2,5)
+NUM_BALLS = 2
 
 print "waiting our turn..."
 if len(sys.argv) > 1:
@@ -34,7 +35,7 @@ bulbs.render(force=True)
 sleep(.1)
 
 # Now add the balls
-balls = zip(*[random.sample(range(10,90,2), NUM_BALLS),random.sample(Bulbs.COLORS, NUM_BALLS),[x*[-1,1][random.randint(0,1)] for x in [1]*NUM_BALLS]])
+balls = zip(*[random.sample(range(10,90,2), NUM_BALLS),random.sample(set(Bulbs.COLORS)-set(Bulbs.BLUE), NUM_BALLS),[x*[-1,1][random.randint(0,1)] for x in [1]*NUM_BALLS]])
 
 
 def ghost(ball, color, direction, initial=False):
@@ -74,7 +75,6 @@ for blinks in range(3):
 def advance(ball_tuple):
 	ball, color, direction = ball_tuple
 	r,g,b,a = color
-	bulbs.frame[ball] = (0,0,0,0) # 0 for now, will be ghosted later
 
 	if ball+direction in bumpers:
 		print "%d Hit bumper." % (ball)
@@ -111,7 +111,7 @@ while True:
 	for ball,color,direction in balls:
 		ghost(ball,color,direction)
 	bulbs.render()
-	for b in field - set(zip(*balls)[0]):
+	for b in field:
 		bulbs.frame[b] = (0,0,0,0)
 	d.busy_wait(.1)
 
