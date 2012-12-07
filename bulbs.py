@@ -20,8 +20,13 @@ class Bulbs:
         (cr,cg,cb,ca) = self.frame[i]
         self.set(i,(cr+r,cg+g,cb+b,ca+a))
     def render(self):
+        wrote_bulb = False
         for i in range(100):
             if self.frame[i] != self.state[i]:
+                wrote_bulb = True
                 (r,g,b,a) = self.frame[i]
                 self.driver.write_led(i, a, r, g, b)
                 self.state[i] = self.frame[i] # deep copy
+        # Write something so we don't time out
+        if not wrote_bulb:
+            self.driver.write_led(100, 0, 0, 0, 0)
