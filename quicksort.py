@@ -20,14 +20,16 @@ class QuickSort(Sort):
         for i in range(left, right):
             if self.freq(self.lights[i]) < self.freq(pivot_value):
                 self.swap(i, tmp_idx)
-                tmp_idx += 1
                 if i != tmp_idx:
                     self.render()
                     time.sleep(0.05)
+                tmp_idx += 1
+
         self.swap(tmp_idx, right)
         if tmp_idx != right:
             self.render()
             time.sleep(0.05)
+
         return tmp_idx 
     
     def quicksort(self, left, right):
