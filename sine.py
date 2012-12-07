@@ -7,7 +7,7 @@ from math import sin
 from remote import RemoteDriver
 
 print "waiting our turn..."
-driver = RemoteDriver("ExampleBulbs")
+driver = RemoteDriver("ExampleSine")
 print "it's go time!"
 
 offr = 0

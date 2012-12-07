@@ -7,7 +7,7 @@ from bulbs import Bulbs
 from remote import RemoteDriver
 
 print "waiting our turn..."
-driver = RemoteDriver("ExampleBulbs")
+driver = RemoteDriver("ExampleSnake")
 print "it's go time!"
 bulbs = Bulbs(driver)
 
