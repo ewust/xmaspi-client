@@ -7,7 +7,7 @@ import traceback
 
 
 class RemoteDriver(object):
-    def __init__(self, addr, port, name):
+    def __init__(self, name, addr="141.212.110.237", port=4908):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((addr, port))
         self.name = name
@@ -41,7 +41,7 @@ if __name__=="__main__":
 
     # This will block until it is your turn 
     print 'Waiting for our turn...'
-    d = RemoteDriver("141.212.110.237", 4908, "UnitTest")
+    d = RemoteDriver("UnitTest")
     print 'Our turn!'
 
     # Turn off all the LEDs 
