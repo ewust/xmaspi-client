@@ -33,13 +33,6 @@ class Sort(object):
         (r, g, b, a) = self.lights[idx]
         return colorsys.rgb_to_hsv(r/15.0, g/15.0, b/15.0)[0]
 
-
-    # oh, i'm sure there are more pythonic sugary ways to do this        
-    def swap(self, i, j):
-        tmp = self.lights[i]
-        self.lights[i] = self.lights[j]
-        self.lights[j] = tmp
-
     # Bubble sort!
     def sort(self):
         for i in range(100, 0, -1):
@@ -48,7 +41,7 @@ class Sort(object):
                 
                 if self.freq(j-1) > self.freq(j):
                     # swap
-                    self.swap(j-1, j)
+                    self.lights[j-1], self.lights[j] = self.lights[j], self.lights[j-1]
                     any_swapped = True
                 
                 self.render()
@@ -77,6 +70,6 @@ if __name__=="__main__":
     sorter.sort()
     
     # Leave the sorted list up
-    d.busy_loop()
+    d.busy_wait()
     
     

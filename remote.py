@@ -4,10 +4,14 @@ import socket
 import time
 import sys
 import traceback
-
+import getpass
 
 class RemoteDriver(object):
-    def __init__(self, name, addr="141.212.110.237", port=4908):
+    def __init__(self, name=None, addr="141.212.110.237", port=4908):
+        # Default to the username of the person running the script
+        if name is None:
+            name = getpass.getuser()
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((addr, port))
         self.name = name
@@ -32,8 +36,12 @@ class RemoteDriver(object):
         self.sock.send(chr(led_id)+chr(brightness)+ \
                        chr(red)+chr(green)+chr(blue))
 
-    def busy_loop(self):
+    def busy_wait(self, duration=None):
+        start = time.time()
         while True:
+            if duration is not None:
+                if (time.time() - start) > duration:
+                    return
             try:
                 self.write_led(100, 0, 0, 0, 0)
                 time.sleep(0.5)
@@ -55,15 +63,25 @@ if __name__=="__main__":
     # Turn off all the LEDs 
     for i in range(100):
         d.write_led(i, 0, 0, 0, 0)
-        
 
-    # Turn them back on from the top, with some delay
+    # Turn them back on from the top, with some delay (100*.05 = 5s)
     for i in range(100):
         d.write_led(i, 200, 13, 0, 13)
         time.sleep(.05)
+
+    # Turn them off in chunks of 10 (10*2 = 20s)
+    # Note that busy_wait must be used for delays >= 1s
+    for i in range(100, 0, -10):
+        for j in range(i, i-10, -1):
+            d.write_led(j-1, 0, 0, 0, 0)
+        d.busy_wait(2)
+
+    # Turn on all the LEDs 
+    for i in range(100):
+        d.write_led(i, 200, 13, 13, 13)
     
     # Send NOP keep-alives until our 30-second time expires
     # Alternatively, you can close the connection with
     # d.done() (or wait for it to time you out)
-    d.busy_loop()
+    d.busy_wait()
  
