@@ -32,7 +32,7 @@ plane = [Snake(0, 20, 1, Bulbs.RED),
          Snake(79, 20, -1, Bulbs.BLUE),
          Snake(45, 10, 2, Bulbs.GREEN)]
 
-while True:
+while not driver.stop_signal():
     bulbs.clear()
     for snake in plane:
         snake.move()
