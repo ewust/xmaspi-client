@@ -29,8 +29,8 @@ class Sort(object):
             self.lights[i] = (r, g, b, 200)
 
     # This is NOT a frequency approx
-    def freq(self, idx):
-        (r, g, b, a) = self.lights[idx]
+    def freq(self, value):
+        (r, g, b, a) = value
         return colorsys.rgb_to_hsv(r/15.0, g/15.0, b/15.0)[0]
 
     def swap(self, i, j):
@@ -42,7 +42,7 @@ class Sort(object):
             any_swapped = False
             for j in range(1, i):
                 
-                if self.freq(j-1) > self.freq(j):
+                if self.freq(self.lights[j-1]) > self.freq(self.lights[j]):
                     self.swap(j-1, j)
                     any_swapped = True
                 
