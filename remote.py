@@ -16,7 +16,7 @@ class RemoteDriver(object):
         self.go()
 
     # blocks until it is our turn
-    def go(self, quiet):
+    def go(self):
         self.sock.send("let's go\n")
 
         buf = self.sock.recv(0x100)
