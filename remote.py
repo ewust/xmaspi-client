@@ -4,10 +4,14 @@ import socket
 import time
 import sys
 import traceback
-
+import getpass
 
 class RemoteDriver(object):
-    def __init__(self, name, addr="141.212.110.237", port=4908):
+    def __init__(self, name=None, addr="141.212.110.237", port=4908):
+        # Default to the username of the person running the script
+        if name is None:
+            name = getpass.getuser()
+
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((addr, port))
         self.name = name
