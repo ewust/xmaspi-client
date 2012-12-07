@@ -62,10 +62,10 @@ def ghost(ball):
 		r,g,b,ign = bulbs.frame[ball]
 
 		ball += d
-		if sum(bulbs.frame[ball]):
+		if sum(bulbs.frame[ball][2:]):
 			return
 		a = a >> 1
-		bulbs.frame[ball] = (r,g,b,a)
+		bulbs.add(ball, (r,g,b,a))
 
 for b in balls:
 	ghost(b)
