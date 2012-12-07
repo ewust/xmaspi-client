@@ -17,9 +17,11 @@ class Bulbs:
     COLORS = (WHITE, RED, GREEN, BLUE, CYAN, PURPLE, YELLOW)
 
     def __init__(self, driver):
-        self.state = [(0,0,0,0)] * 100
+        self.state =  [(0,0,0,0)] * 100
         self.frame = [(0,0,0,0)] * 100
         self.driver = driver
+    def clear(self):
+        self.frame = [(0,0,0,0)] * 100
     def set(self, i, (r,g,b,a)):
         r = clamp(r,0,15)
         g = clamp(g,0,15)
