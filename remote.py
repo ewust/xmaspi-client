@@ -32,8 +32,12 @@ class RemoteDriver(object):
         self.sock.send(chr(led_id)+chr(brightness)+ \
                        chr(red)+chr(green)+chr(blue))
 
-    def busy_loop(self):
+    def busy_wait(self, duration=None):
+        start = time.time()
         while True:
+            if duration is not None:
+                if (time.time() - start) > duration:
+                    return
             try:
                 self.write_led(100, 0, 0, 0, 0)
                 time.sleep(0.5)
@@ -65,5 +69,5 @@ if __name__=="__main__":
     # Send NOP keep-alives until our 30-second time expires
     # Alternatively, you can close the connection with
     # d.done() (or wait for it to time you out)
-    d.busy_loop()
+    d.busy_wait()
  

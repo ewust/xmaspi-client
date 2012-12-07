@@ -77,6 +77,6 @@ if __name__=="__main__":
     sorter.sort()
     
     # Leave the sorted list up
-    d.busy_loop()
+    d.busy_wait()
     
     
