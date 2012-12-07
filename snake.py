@@ -1,13 +1,15 @@
 #!/usr/bin/python
 
+# SNAKES!
+
 from time import sleep
 from bulbs import Bulbs
 from remote import RemoteDriver
 
 print "waiting our turn..."
-d = RemoteDriver("ExampleBulbs")
+driver = RemoteDriver("ExampleBulbs")
 print "it's go time!"
-bulbs = Bulbs(d)
+bulbs = Bulbs(driver)
 
 class Snake:
     def __init__(self, position, size, speed, color):
@@ -26,7 +28,9 @@ class Snake:
             bulbs.add(x, self.color)
             x = (x + 1) % Bulbs.COUNT
 
-plane = [Snake(0,10,1,Bulbs.RED), Snake(50,15,-1,Bulbs.BLUE)]
+plane = [Snake(0, 20, 1, Bulbs.RED),
+         Snake(79, 20, -1, Bulbs.BLUE),
+         Snake(45, 10, 2, Bulbs.GREEN)]
 
 while True:
     bulbs.clear()
@@ -34,4 +38,4 @@ while True:
         snake.move()
         snake.draw(bulbs)
     bulbs.render()
-    sleep(0.01)
+    sleep(0.05)
