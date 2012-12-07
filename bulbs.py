@@ -8,6 +8,7 @@ def clamp(x, min, max):
 class Bulbs:
     COUNT = 100
 
+    BLACK   = ( 0, 0, 0,  0)
     WHITE   = (15,15,15,255)
     RED     = (15, 0, 0,255)
     GREEN   = ( 0,15, 0,255)
