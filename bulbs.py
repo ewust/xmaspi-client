@@ -6,6 +6,8 @@ def clamp(x, min, max):
     return x
 
 class Bulbs:
+    COUNT = 100
+
     WHITE   = (15,15,15,255)
     RED     = (15, 0, 0,255)
     GREEN   = ( 0,15, 0,255)
@@ -14,14 +16,14 @@ class Bulbs:
     PURPLE  = (15, 0,15,255)
     YELLOW  = (15,15, 0,255)
 
-    COLORS = (WHITE, RED, GREEN, BLUE, CYAN, PURPLE, YELLOW)
+    COLORS = (BLACK, WHITE, RED, GREEN, BLUE, CYAN, PURPLE, YELLOW)
 
     def __init__(self, driver):
-        self.state =  [(0,0,0,0)] * 100
-        self.frame = [(0,0,0,0)] * 100
+        self.state =  [(0,0,0,0)] * self.COUNT
+        self.frame = [(0,0,0,0)] * self.COUNT
         self.driver = driver
     def clear(self):
-        self.frame = [(0,0,0,0)] * 100
+        self.frame = [(0,0,0,0)] * self.COUNT
     def set(self, i, (r,g,b,a)):
         r = clamp(r,0,15)
         g = clamp(g,0,15)
@@ -37,7 +39,7 @@ class Bulbs:
         return self.add(i, (r,g,b,a))
     def render(self, force=False):
         wrote_bulb = False
-        for i in range(100):
+        for i in range(self.COUNT):
             if force or self.frame[i] != self.state[i]:
                 wrote_bulb = True
                 (r,g,b,a) = self.frame[i]
@@ -45,4 +47,4 @@ class Bulbs:
                 self.state[i] = self.frame[i] # deep copy
         # Write something so we don't time out
         if not wrote_bulb:
-            self.driver.write_led(100, 0, 0, 0, 0)
+            self.driver.write_led(self.COUNT, 0, 0, 0, 0)
