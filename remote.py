@@ -37,17 +37,17 @@ class RemoteDriver(object):
                        chr(red)+chr(green)+chr(blue))
 
     def busy_wait(self, duration=None):
-        start = time.time()
-        while True:
-            if duration is not None:
-                if (time.time() - start) > duration:
-                    return
+        if duration is None:
+            duration = 1000
+
+        while duration > 0:
             try:
                 self.write_led(100, 0, 0, 0, 0)
-                time.sleep(0.5)
+                time.sleep(min(duration, 0.5))
+                duration -= 0.5
             except:
-                return 
-    
+                return
+
     def done(self):
         self.sock.close()
 
