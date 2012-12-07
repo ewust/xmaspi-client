@@ -33,18 +33,18 @@ class Bulbs:
         self.frame[i] = (r,g,b,a)
     def add(self, i, (r,g,b,a)):
         (cr,cg,cb,ca) = self.frame[i]
-        self.set(i,(cr+r,cg+g,cb+b,ca+a))
+        return self.set(i,(cr+r,cg+g,cb+b,ca+a))
     def mix(self, i, (r,g,b,a)):
         # XXX: Work like add(), but scale relative amounts based on alpha channel
         #      (e.g. bright red + dim blue is mostly red stil, not bright purple)
-        return self.add(i, (r,g,b,a))
+        return self.add(i,(r,g,b,a))
     def render(self, force=False):
         wrote_bulb = False
         for i in range(self.COUNT):
             if force or self.frame[i] != self.state[i]:
                 wrote_bulb = True
                 (r,g,b,a) = self.frame[i]
-                self.driver.write_led(i, a, r, g, b)
+                self.driver.write_led(i, int(a), int(r), int(g), int(b))
                 self.state[i] = self.frame[i] # deep copy
         # Write something so we don't time out
         if not wrote_bulb:
