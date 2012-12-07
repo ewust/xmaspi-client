@@ -7,7 +7,7 @@ from remote import RemoteDriver
 
 import random
 
-NUM_BALLS = 1
+NUM_BALLS = 3
 
 print "waiting our turn..."
 if len(sys.argv) > 1:
@@ -99,14 +99,14 @@ def advance(ball):
 		print "Hit bumper. Ball %d is now (%d %d %d %d)" % (ball, g,r,b,a>>1)
 	elif ball+d in balls:
 		print "Collided with ", ball+d
-		other_idx = ball+d
-		other = bulbs.frame[other_idx]
+		other = ball+d
+		ro,go,bo,ao = bulbs.frame[other]
 
 		d = -d
 		ball = ball + d
-		bulbs.frame[ball] = other
+		bulbs.frame[ball] = (ro,go,bo,a)
 
-		bulbs.frame[other_idx] = (r,g,b,a)
+		bulbs.frame[other] = (r,g,b,ao)
 	else:
 		ball = ball + d
 		bulbs.frame[ball] = (r,g,b,a)
