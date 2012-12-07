@@ -8,7 +8,7 @@ Using the API
 
 Writing to the lights with this API is simple:
 
-    from remote import 
+    from remote import RemoteDriver
     d = RemoteDriver("UnitTest")
     d.write_led(led_id, brightness, red, green, blue)
 
