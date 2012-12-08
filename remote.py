@@ -47,6 +47,14 @@ class RemoteDriver(object):
                 duration -= 0.5
             except:
                 return
+    wait = busy_wait
+
+    def stop_signal(self):
+        """
+        Returns True if client's turn is over
+        (use for future compatibility)
+        """
+        return False
 
     def done(self):
         self.sock.close()
