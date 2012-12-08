@@ -66,7 +66,15 @@ class GenXMas:
                 pos = pos_gen.next()
                 color = color_gen.next()
                 if pos >= 0 and pos < Bulbs.COUNT:
-                    frame[int(pos)] = color
+                    r,g,b,a = color
+                    if pos != int(pos):
+                        r,g,b,a = color                        
+                        y = pos-int(pos)
+                        x = 1.-y
+                        frame[int(pos)] = (r,g,b,int(x*a))
+                        frame[(int(pos)+1) % Bulbs.COUNT] = (r,g,b,int(y*a))
+                    else:
+                        frame[int(pos)] = color
                 survivors += [(pos_gen,color_gen)]
             except StopIteration:
                 pass
