@@ -5,6 +5,10 @@ def clamp(x, min, max):
     if x > max: return max
     return x
 
+def gamma(a):
+    GAMMA = 2.
+    return pow((a/255.),GAMMA) * 255.
+
 class Bulbs:
     COUNT = 100
 
@@ -20,12 +24,13 @@ class Bulbs:
     COLORS = (BLACK, WHITE, RED, GREEN, BLUE, CYAN, PURPLE, YELLOW)
 
     def __init__(self, driver):
-        self.state =  [(0,0,0,0)] * self.COUNT
+        self.state =  [(0,0,0,-1)] * self.COUNT
         self.frame = [(0,0,0,0)] * self.COUNT
         self.driver = driver
     def clear(self):
         self.frame = [(0,0,0,0)] * self.COUNT
     def set(self, i, (r,g,b,a)):
+        if i < 0 or i >= self.COUNT: return
         r = clamp(r,0,15)
         g = clamp(g,0,15)
         b = clamp(b,0,15)
@@ -44,7 +49,7 @@ class Bulbs:
             if force or self.frame[i] != self.state[i]:
                 wrote_bulb = True
                 (r,g,b,a) = self.frame[i]
-                self.driver.write_led(i, int(a), int(r), int(g), int(b))
+                self.driver.write_led(i, int(gamma(a)), int(r), int(g), int(b))
                 self.state[i] = self.frame[i] # deep copy
         # Write something so we don't time out
         if not wrote_bulb:
