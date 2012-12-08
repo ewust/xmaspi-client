@@ -31,57 +31,10 @@ class MergeSort(object):
         r, g, b, a = color
         return colorsys.rgb_to_hsv(r/15.0, g/15.0, b/15.0)[0]
 
-
-    def display_list(self, bins, test_print=False):
-        offPerInterval = int(50 / (bins + 1))
-        #must be float for ceiling to work properly
-        if 50 / bins != 1:
-            onPerInterval = int(math.ceil(50.0 / bins))
-        else:
-            onPerInterval = 1
-        listWritten = 0
-        # first print off then on
-        flag = False
-        counter = 0
-        for i in range(100):
-            if not flag and (counter / offPerInterval) > 0:
-                counter = 0
-                flag = True
-            elif (flag and counter / onPerInterval > 0):
-                counter = 0
-                flag = False
-
-            # separate statement to avoid elif clause that can be skipped
-            if listWritten >= 50:
-                counter = 0
-                flag = False
-
-            if not flag:
-                self.lights[i] = (0, 0, 0, 0)
-                counter += 1
-                
-            elif flag:
-                counter += 1
-                self.lights[i] = self.mylist[listWritten]
-                listWritten += 1
-            
-        if listWritten != 50:
-            print "error"
-            print listWritten
-        self.driver.write_led(100, 0, 0, 0, 0)
-        self.render()
-        if test_print:
-            print self.lights
-        time.sleep(sleep_time)
-
-    def display_lol(self, lol, test_print = False):
+    # lol = list of lists
+    def display_lol(self, lol, sleep = sleep_time, test_print = False):
         offInterval = 50 / (len(lol) + 1)
-        onInterval = int(math.ceil(50.0 / (len(lol))))
-        if 50 / len(lol) == 1:
-            onInterval = 1
-
         listWritten = 0
-        # first print off then on
         i = 0
         roundNum = 0
         listWritten = 0
@@ -107,61 +60,82 @@ class MergeSort(object):
         self.render()
         if test_print:
             print self.lights
-        
-        time.sleep(sleep_time)
+        time.sleep(sleep)
+
+        # This can represent end goal
+        return self.lights
 
     
     def render(self):
         for i in range(100):
             self.bulbs.set(i, self.lights[i])
-        print self.bulbs.frame
-        self.bulbs.render()
-        # Render seems to have an error in it... write it all myself right now
-        for i in range(100):
-            (r,g,b,a) = self.bulbs.frame[i]
-            self.driver.write_led(i, a,r,g,b)
+        #print self.bulbs.frame
+        r = random.randint(0,2)
+        if r == 0:
+            self.bulbs.render(True)
+        else:
+            self.bulbs.render()
             
 
     # Recursive merge sort
-    def sort(self, sub, leftMostPosition, bins):
-        if len(sub) <= 1:
-            # List is sorted
-            return sub
+    # def sort(self, sub, leftMostPosition, bins):
+    #     if len(sub) <= 1:
+    #         # List is sorted
+    #         return sub
         
-        # Must continue sorting
-        middle = len(sub) / 2
-        left = []
-        right = []
-        for i in range(len(sub)):
-            if i < middle:
-                left.append(sub[i])
-            else:
-                right.append(sub[i])
+    #     # Must continue sorting
+    #     middle = len(sub) / 2
+    #     left = []
+    #     right = []
+    #     for i in range(len(sub)):
+    #         if i < middle:
+    #             left.append(sub[i])
+    #         else:
+    #             right.append(sub[i])
         
         
-        left = self.sort(left, leftMostPosition, bins * 2)
-        #self.display_list(bins)
-        #print bins
-        right = self.sort(right, middle, bins * 2)
+    #     left = self.sort(left, leftMostPosition, bins * 2)
+    #     #self.display_list(bins)
+    #     #print bins
+    #     right = self.sort(right, middle, bins * 2)
         
-        mergedList = self.merge(left, right, leftMostPosition)
-        #self.partialSortMyList(mergedList, leftMostPosition)
-        self.display_list(bins)
-        print bins
-        self.check_list(mergedList)
-        return mergedList
+    #     mergedList = self.merge(left, right, leftMostPosition)
+    #     #self.partialSortMyList(mergedList, leftMostPosition)
+    #     self.display_list(bins)
+    #     print bins
+    #     self.check_list(mergedList)
+    #     return mergedList
 
+    def breakdown_list(self, l, storage, level):
+        lol = []
+        if len(l) <= 1:
+            return [l]
+        middle = len(l) / 2
+        left = l[:middle]
+        right = l[middle:]
+        storage[level].append(left)
+        storage[level].append(right)
+        lol.extend(self.breakdown_list(left, storage, level+1))
+        lol.extend(self.breakdown_list(right, storage, level+1))
+
+        return lol
+        
+    def breakdown_list2(self, l):
+        middle = len(l) / 2
+        left = l[:middle]
+        right = l[middle:]
+        for i in range(6):
+            l.append(left)
+            l.append(right)
 
     def iter_sort(self):
         #working list of lists
-        wlol = []
-        for element in self.mylist:
-            wlol.append([element])
+        storage = [[],[],[],[],[],[]] 
+        wlol = self.breakdown_list(self.mylist, storage, 0)
+        print "storage", storage[5]
 
-        # Now i have a a list of 50 lists with 1 element each
-        # simulate the original breakup
-        for i in range(35):
-            self.display_list(i+1)
+        for s in storage:
+            self.display_lol(s)
 
         lollen = 1
         while lollen <= len(self.mylist):
@@ -175,6 +149,7 @@ class MergeSort(object):
                 new_wlol.append(wlol[i])
 
             if new_wlol:
+                # new working list of lists is instantiated on each iteration
                 wlol = new_wlol
 
             lollen *= 2
@@ -182,7 +157,7 @@ class MergeSort(object):
 
         print "wlol", wlol
         print "lollen", lollen
-        #self.check_list(wlol)
+        self.check_list(wlol[0])
         return wlol
 
     def check_list(self, someList):
@@ -233,7 +208,7 @@ if __name__=="__main__":
     #merger.mylist = merger.sort(merger.mylist, 0, 1)
     finalList = merger.iter_sort()
     #merger.check_list(finalList)
-    merger.display_lol(finalList, True)
+    merger.display_lol(finalList, .4, True)
     #print merger.mylist
 
     d.busy_wait()
