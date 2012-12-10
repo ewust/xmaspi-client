@@ -9,15 +9,31 @@ class QuickSort(Sort):
     def __init__(self, bulbs):
         super(QuickSort, self).__init__(bulbs)
 
+    def dim_light(self, idx):
+        (r, g, b, a) = self.lights[idx]
+        self.lights[idx] = (r, g, b, 20)
+    
+    def brighten_light(self, idx):
+        (r, g, b, a) = self.lights[idx]
+        self.lights[idx] = (r, g, b, 200)
+
     # From Wikipedia's pseudo code of an in-place quicksort
     def partition(self, left, right, pivot_idx): 
         pivot_value = self.lights[pivot_idx]
         self.swap(pivot_idx, right)
         if pivot_idx != right:
             self.render()
-            time.sleep(0.05)
         tmp_idx = left
         for i in range(left, right):
+            # flash compare
+            self.dim_light(i)
+            self.dim_light(right)
+            self.render()
+            time.sleep(0.05)
+            
+            self.brighten_light(i)
+            self.brighten_light(right)
+            
             if self.freq(self.lights[i]) < self.freq(pivot_value):
                 self.swap(i, tmp_idx)
                 if i != tmp_idx:
