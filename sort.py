@@ -8,6 +8,7 @@ import time
 
 import colorsys
 
+# boring rainbow
 colors = [(15, 0, 0), \
             (15, 3, 0), \
             (15, 15, 0), \
@@ -17,14 +18,38 @@ colors = [(15, 0, 0), \
             (14, 0, 14) ]
 
 
+def init_colors():
+    global colors
+    colors = []
+    cur_color = [0, 0, 15]
+    idx = 0
+    count_up = True
+    # From Max
+    while cur_color != [0, 1, 15]:
+        # Cycle through the wheel
+        if count_up is True:
+            cur_color[idx] += 1
+            if cur_color[idx] == 15:
+                count_up = False
+                idx = (idx-1)%3
+        else:
+            cur_color[idx] -= 1
+            if cur_color[idx] == 0:
+                count_up = True
+                idx = (idx-1)%3
+        (cp_r, cp_g, cp_b) = cur_color
+        colors.append([cp_r, cp_g, cp_b])
+        
+
+init_colors()
+
+
 class Sort(object):
     def __init__(self, bulbs):
         self.bulbs = bulbs
         self.lights = [(0,0,0,0)]*100 
+        init_colors()
         for i in range(100):
-            r = random.randint(0, 15)
-            g = random.randint(0, 15)
-            b = random.randint(0, 15)
             (r, g, b) = colors[random.randint(0, len(colors)-1)]
             self.lights[i] = (r, g, b, 200)
 

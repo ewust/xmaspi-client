@@ -22,6 +22,7 @@ def degree_to_leds(deg, color):
         led += 37
     return ret
 
+'''
 def show_clock(bulbs, hour, minute, second):
     hour_hand_leds = degree_to_leds(360*hour/12.0, (15, 0, 0, 200))
     minute_hand_leds  = degree_to_leds(6*minute, (0, 15, 0, 200))
@@ -37,23 +38,43 @@ def show_clock(bulbs, hour, minute, second):
 
     bulbs.render()
     bulbs.clear()
+'''
 
 
-if __name__=="__main__":
-    d = RemoteDriver()  
-    b = Bulbs(d)
+# Subpixel Clock
+# (gen.py and GenXMas)
 
-    hour = 3
-    minute = 45
-    second = 10
+from time import sleep
+from bulbs import Bulbs
+from remote import RemoteDriver
+from gen import *
+from random import choice
+from itertools import chain
 
-    for led in range(100):
-        d.write_led(led, 0, 0, 0, 0)
+print "waiting our turn..."
+driver = RemoteDriver("SubpixelClock")
+print "it's go time!"
+bulbs = Bulbs(driver)
 
+from time import time
+def seconds():
+    while True: 
+        dt = datetime.datetime.now()
+        yield dt.second
+def minutes():
+    while True: 
+        dt = datetime.datetime.now()
+        yield dt.minute
+def hours():
     while True:
         dt = datetime.datetime.now()
-        show_clock(b, dt.hour, dt.minute, dt.second)
-        time.sleep(.5)
-        d.write_led(100, 0, 0, 0, 0)
+        yield dt.hour
 
+gx = GenXMas(bulbs)
+gx.add((seconds(), solid(bulbs.RED)))
+gx.add((minutes(), solid(bulbs.GREEN)))
+gx.add((hours(), solid(bulbs.BLUE)))
 
+while not driver.stop_signal():
+    gx.render()
+    sleep(0.005)
