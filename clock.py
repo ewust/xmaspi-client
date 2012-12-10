@@ -22,24 +22,6 @@ def degree_to_leds(deg, color):
         led += 37
     return ret
 
-'''
-def show_clock(bulbs, hour, minute, second):
-    hour_hand_leds = degree_to_leds(360*hour/12.0, (15, 0, 0, 200))
-    minute_hand_leds  = degree_to_leds(6*minute, (0, 15, 0, 200))
-    second_hand_leds = degree_to_leds(6*second, (0, 0, 15, 200))
-    
-    for led,color in hour_hand_leds:
-        print led, color
-        bulbs.set(led, color)
-    for led,color in minute_hand_leds:
-        bulbs.set(led, color)
-    for led,color in second_hand_leds:
-        bulbs.set(led, color)
-
-    bulbs.render()
-    bulbs.clear()
-'''
-
 
 # Subpixel Clock
 # (gen.py and GenXMas)
@@ -60,15 +42,15 @@ from time import time
 def seconds():
     while True: 
         dt = datetime.datetime.now()
-        yield dt.second
+        yield ((float(dt.second) + dt.microsecond / 1000000.0) / 60.0 ) * 37
 def minutes():
     while True: 
         dt = datetime.datetime.now()
-        yield dt.minute
+        yield ((float(dt.minute) + dt.second / 60.0) / 60.0) * 37
 def hours():
     while True:
         dt = datetime.datetime.now()
-        yield dt.hour
+        yield ((float(dt.hour) + dt.minute / 60.0) / 12.0) * 37
 
 gx = GenXMas(bulbs)
 gx.add((seconds(), solid(bulbs.RED)))
@@ -78,3 +60,25 @@ gx.add((hours(), solid(bulbs.BLUE)))
 while not driver.stop_signal():
     gx.render()
     sleep(0.005)
+
+
+
+'''
+def show_clock(bulbs, hour, minute, second):
+    hour_hand_leds = degree_to_leds(360*hour/12.0, (15, 0, 0, 200))
+    minute_hand_leds  = degree_to_leds(6*minute, (0, 15, 0, 200))
+    second_hand_leds = degree_to_leds(6*second, (0, 0, 15, 200))
+    
+    for led,color in hour_hand_leds:
+        print led, color
+        bulbs.set(led, color)
+    for led,color in minute_hand_leds:
+        bulbs.set(led, color)
+    for led,color in second_hand_leds:
+        bulbs.set(led, color)
+
+    bulbs.render()
+    bulbs.clear()
+'''
+
+
